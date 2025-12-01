@@ -22,11 +22,11 @@ matches_table = Table(
 
 players_table = Table(
     "players", metadata,
-    Column("player_id", BigInteger, primary_key=True),  # ID는 BigInteger 추천
-    Column("team_id", BigInteger, nullable=True),       # 일부 팀 ID가 null/float일 수 있음
+    Column("player_id", BigInteger, primary_key=True),  
+    Column("team_id", BigInteger, nullable=True),       
     Column("name", String),
-    Column("age", Integer, nullable=True),              # nan 포함 → nullable 필요
-    Column("number", Integer, nullable=True),           # nan 포함 가능
+    Column("age", Integer, nullable=True),              
+    Column("number", Integer, nullable=True),          
     Column("position", String),
     Column("photo", String),
 )
