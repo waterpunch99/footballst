@@ -9,3 +9,24 @@ def fetch_fixtures(league=39, season=2023):
     response.raise_for_status()
     data = response.json()
     return data.get("response", [])
+
+def fetch_teams(league=39, season=2023):
+    url = f"https://v3.football.api-sports.io/teams?league={league}&season={season}"
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("response", [])
+
+def fetch_players(team_id):
+    url = f"https://v3.football.api-sports.io/players/squads?team={team_id}"
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("response", [])
+
+def fetch_match_detail(match_id):
+    url = f"https://v3.football.api-sports.io/fixtures?id={match_id}"
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("response", [])
