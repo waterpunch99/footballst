@@ -7,8 +7,7 @@ import lombok.Data;
 @Table(name = "matches")
 public class Match {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String match_id;
 
     private String matchDate;
     private String homeTeam;

@@ -1,98 +1,121 @@
 import pandas as pd
 
-def fixtures_to_df(matches):
-    match_list = []
-    for match in matches:
-        fixture = match['fixture']
-        teams = match['teams']
-        goals = match['goals']
 
-        match_list.append({
-            "match_id": fixture['id'],
-            "match_date": fixture['date'],
-            "home_team": teams['home']['name'],
-            "away_team": teams['away']['name'],
-            "home_goals": goals['home'],
-            "away_goals": goals['away'],
+def fixtures_to_df(matches):
+    rows = []
+
+    for m in matches:
+        fixture = m.get("fixture", {})
+        teams = m.get("teams", {})
+        goals = m.get("goals", {})
+
+        home = teams.get("home", {})
+        away = teams.get("away", {})
+
+        rows.append({
+            "match_id": fixture.get("id"),
+            "match_date": fixture.get("date"),
+            "home_team_id": home.get("id"),
+            "away_team_id": away.get("id"),
+            "home_goals": goals.get("home"),
+            "away_goals": goals.get("away")
         })
 
-    return pd.DataFrame(match_list)
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df["match_date"] = pd.to_datetime(df["match_date"])
+
+    return df
+
 
 def teams_to_df(teams):
-    team_list = []
-    for item in teams:
-        team = item.get("team", {})
-
-        team_list.append({
-            "team_id": team.get("id"),
-            "name": team.get("name"),
-            "country": team.get("country"),
-            "league_id": item.get("league", {}).get("id", 39),  # 기본 리그 39로 설정
-            "logo": team.get("logo")
-        })
-
-    return pd.DataFrame(team_list)
-
-def players_to_df(players_response):
- 
-    player_list = []
-
-    if not players_response:
-        return pd.DataFrame(player_list)
-
-    team_id = players_response[0]["team"]["id"]
-
-    for player in players_response[0]["players"]:
-        player_list.append({
-            "player_id": player.get("id"),
-            "team_id": team_id,
-            "name": player.get("name"),
-            "age": player.get("age"),
-            "number": player.get("number"),
-            "position": player.get("position"),
-            "photo": player.get("photo")
-        })
-
-    return pd.DataFrame(player_list)
+    return pd.DataFrame([{
+        "team_id": t.get("team", {}).get("id"),
+        "name": t.get("team", {}).get("name"),
+        "country": t.get("team", {}).get("country"),
+        "league_id": t.get("league", {}).get("id", 39),
+        "logo": t.get("team", {}).get("logo")
+    } for t in teams])
 
 
-
-def fixture_details_to_df(detail_response):
-    if not detail_response:
+def players_to_df(resp):
+    if not resp:
         return pd.DataFrame([])
 
-    f = detail_response[0]["fixture"]
-    
-    detail = {
-        "match_id": f["id"],
+    block = resp[0]
+    team_id = block.get("team", {}).get("id")
+    players = block.get("players", [])
+
+    return pd.DataFrame([{
+        "player_id": str(p.get("id")),
+        "team_id": str(team_id),
+        "name": p.get("name"),
+        "age": p.get("age"),
+        "number": p.get("number"),
+        "position": p.get("position"),
+        "photo": p.get("photo")
+    } for p in players])
+
+
+def fixture_details_to_df(resp):
+    if not resp:
+        return pd.DataFrame([])
+
+    f = resp[0].get("fixture", {})
+
+    df = pd.DataFrame([{
+        "match_id": f.get("id"),
         "referee": f.get("referee"),
         "venue": f.get("venue", {}).get("name"),
         "timezone": f.get("timezone"),
-        "date": f.get("date")
-    }
+        "date": f.get("date"),
+    }])
 
-    return pd.DataFrame([detail])
+    df["date"] = pd.to_datetime(df["date"])
+    return df
 
-def events_to_df(detail_response):
-    if not detail_response:
+
+import pandas as pd
+
+
+def events_to_df(resp):
+    if not resp:
         return pd.DataFrame([])
 
-    events = detail_response[0].get("events", [])
-    match_id = detail_response[0]["fixture"]["id"]
+    match = resp[0]
+    fixture = match.get("fixture", {})
+    events = match.get("events", []) or []
 
-    event_list = []
+    match_id = fixture.get("id")
 
+    rows = []
     for e in events:
-        event_list.append({
+        time = e.get("time") or {}
+        team = e.get("team") or {}
+        player = e.get("player") or {}
+        assist = e.get("assist") or {}
+
+        rows.append({
             "match_id": match_id,
-            "elapsed": e.get("time", {}).get("elapsed"),
-            "team_id": e.get("team", {}).get("id"),
-            "player_id": e.get("player", {}).get("id"),
-            "player_name": e.get("player", {}).get("name"),
-            "assist_id": e.get("assist", {}).get("id"),
-            "assist_name": e.get("assist", {}).get("name"),
+            "elapsed": time.get("elapsed"),          
+            "team_id": team.get("id"),               
+            "player_id": player.get("id"),          
+            "player_name": player.get("name"),
+            "assist_id": assist.get("id"),           
+            "assist_name": assist.get("name"),
             "type": e.get("type"),
-            "detail": e.get("detail")
+            "detail": e.get("detail"),
         })
 
-    return pd.DataFrame(event_list)
+    df = pd.DataFrame(rows)
+
+    if df.empty:
+        return df
+    
+    for col in ["elapsed", "team_id", "player_id", "assist_id"]:
+        if col in df.columns:
+            df[col] = df[col].astype("Int64")
+
+    return df
+
+
