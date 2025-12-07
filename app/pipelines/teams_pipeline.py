@@ -11,4 +11,4 @@ def run_teams_pipeline(engine, league=39, season=2023):
 
     upsert_to_postgres(df, teams_table, engine, ["team_id"])
 
-    print("[teams 생성")
+    print("teams 생성")

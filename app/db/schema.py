@@ -32,7 +32,7 @@ players_table = Table(
     "players",
     metadata,
     Column("player_id", String, primary_key=True),
-    Column("team_id", String),
+    Column("team_id", Integer),
     Column("name", String),
     Column("age", String),  
     Column("number", String),

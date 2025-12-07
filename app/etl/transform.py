@@ -48,7 +48,7 @@ def players_to_df(resp):
 
     return pd.DataFrame([{
         "player_id": str(p.get("id")),
-        "team_id": str(team_id),
+        "team_id": p.get(team_id),
         "name": p.get("name"),
         "age": p.get("age"),
         "number": p.get("number"),
