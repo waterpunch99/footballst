@@ -142,7 +142,7 @@
           "name": "E. Eze",
           "age": 27,
           "number": 10,
-          "position": "Midfielder",
+          "position": "Attacker",
           "photo": "https://media.api-sports.io/football/players/19586.png"
         },
         {
@@ -262,7 +262,7 @@
           "name": "L. Trossard",
           "age": 31,
           "number": 19,
-          "position": "Midfielder",
+          "position": "Attacker",
           "photo": "https://media.api-sports.io/football/players/1946.png"
         }
       ]

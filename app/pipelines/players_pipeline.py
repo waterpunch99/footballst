@@ -1,36 +1,35 @@
 import pandas as pd
-from app.etl.extract import extract_players
-from app.etl.transform import players_to_df
-from app.etl.load import upsert_to_postgres
+
+from app.etl.extract.extractor import extract_players
+from app.etl.transform.players import transform_players
+from app.etl.load.postgres_loader import upsert_dataframe
 from app.db.schema import players_table
 
 
 def run_players_pipeline(engine):
+    print("\n[PIPELINE] Players 시작")
 
     teams_df = pd.read_sql("SELECT team_id FROM teams", engine)
-
     if teams_df.empty:
+        print("[PIPELINE] teams 데이터 없음 → 스킵")
         return
 
     all_players = []
 
     for _, row in teams_df.iterrows():
         team_id = row["team_id"]
-        resp = extract_players(team_id)
-        df_players = players_to_df(resp)
-        all_players.append(df_players)
+        raw = extract_players(team_id)
+        df = transform_players(raw)
 
-   
+        if not df.empty:
+            all_players.append(df)
+
     if not all_players:
+        print("[PIPELINE] players 없음 → 완료")
         return
 
-    final = pd.concat(all_players, ignore_index=True)
+    final_df = pd.concat(all_players, ignore_index=True)
 
-   
-    final["player_id"] = final["player_id"].astype(str)
-    final["team_id"] = final["team_id"].astype(str)
+    upsert_dataframe(final_df, players_table, engine, ["player_id"])
 
-
-
-    upsert_to_postgres(final, players_table, engine, ["player_id"])
-    print("players 생성")
+    print("[PIPELINE] Players 완료")

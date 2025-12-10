@@ -1,12 +1,17 @@
-from app.etl.extract import extract_fixtures
-from app.etl.transform import fixtures_to_df
-from app.etl.load import upsert_to_postgres
+# app/pipelines/fixtures_pipeline.py
+
+from app.etl.extract.extractor import extract_fixtures
+from app.etl.transform.fixtures import transform_fixtures
+from app.etl.load.postgres_loader import upsert_dataframe
 from app.db.schema import matches_table
 
 
 def run_fixtures_pipeline(engine, league=39, season=2023):
+    print("\n[PIPELINE] Fixtures 시작")
 
-    df = fixtures_to_df(extract_fixtures(league, season))
-    upsert_to_postgres(df, matches_table, engine, ["match_id"])
+    raw = extract_fixtures(league, season)
+    df = transform_fixtures(raw)
 
-    print("fixture 생성")
+    upsert_dataframe(df, matches_table, engine, ["match_id"])
+
+    print("[PIPELINE] Fixtures 완료")

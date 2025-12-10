@@ -62,7 +62,7 @@
           "name": "Álex Jiménez",
           "age": 20,
           "number": 20,
-          "position": "Defender",
+          "position": "Midfielder",
           "photo": "https://media.api-sports.io/football/players/330437.png"
         },
         {
@@ -126,7 +126,7 @@
           "name": "A. Adli",
           "age": 25,
           "number": 21,
-          "position": "Midfielder",
+          "position": "Attacker",
           "photo": "https://media.api-sports.io/football/players/129682.png"
         },
         {

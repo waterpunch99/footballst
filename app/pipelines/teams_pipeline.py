@@ -1,14 +1,15 @@
-from app.etl.extract import extract_teams
-from app.etl.transform import teams_to_df
-from app.etl.load import upsert_to_postgres
+from app.etl.extract.extractor import extract_teams
+from app.etl.transform.teams import transform_teams
+from app.etl.load.postgres_loader import upsert_dataframe
 from app.db.schema import teams_table
 
 
 def run_teams_pipeline(engine, league=39, season=2023):
+    print("\n[PIPELINE] Teams 시작")
 
-    df = teams_to_df(extract_teams(league, season))
-    df = df.drop_duplicates(subset=["team_id"])
+    raw = extract_teams(league, season)
+    df = transform_teams(raw)
 
-    upsert_to_postgres(df, teams_table, engine, ["team_id"])
+    upsert_dataframe(df, teams_table, engine, ["team_id"])
 
-    print("teams 생성")
+    print("[PIPELINE] Teams 완료")

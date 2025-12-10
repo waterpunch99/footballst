@@ -1,23 +1,14 @@
-from app.db.engine import engine
-from app.db.schema import metadata
-from app.pipelines.teams_pipeline import run_teams_pipeline
-from app.pipelines.fixtures_pipeline import run_fixtures_pipeline
-from app.pipelines.players_pipeline import run_players_pipeline
-from app.pipelines.match_details_pipeline import run_match_details_pipeline
+from app.pipelines.run_all import run_all         
+from app.pipelines.gold.run_gold_pipeline import run_gold_pipelines 
 
 
-def init_db():
-    metadata.create_all(engine)
+def main(league=39, season=2023):
+    
+    run_all(league=league, season=season)
 
-
-def run_all():
-    init_db()
-
-    run_teams_pipeline(engine)
-    run_fixtures_pipeline(engine)
-    run_players_pipeline(engine)
-    run_match_details_pipeline(engine)
+   
+    run_gold_pipelines(season=season)
 
 
 if __name__ == "__main__":
-    run_all()
+    main()

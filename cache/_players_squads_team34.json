@@ -198,7 +198,7 @@
           "name": "J. Murphy",
           "age": 30,
           "number": 23,
-          "position": "Attacker",
+          "position": "Midfielder",
           "photo": "https://media.api-sports.io/football/players/19163.png"
         },
         {
@@ -246,7 +246,7 @@
           "name": "H. Barnes",
           "age": 28,
           "number": 11,
-          "position": "Attacker",
+          "position": "Midfielder",
           "photo": "https://media.api-sports.io/football/players/18778.png"
         },
         {

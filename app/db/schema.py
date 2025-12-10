@@ -1,9 +1,10 @@
 from sqlalchemy import (
     Table, Column, Integer, BigInteger, String,
-    DateTime, MetaData
+    DateTime, MetaData,Float
 )
 
 metadata = MetaData()
+
 
 teams_table = Table(
     "teams",
@@ -26,20 +27,17 @@ matches_table = Table(
     Column("away_goals", Integer),
 )
 
-
-
 players_table = Table(
     "players",
     metadata,
     Column("player_id", String, primary_key=True),
     Column("team_id", Integer),
     Column("name", String),
-    Column("age", String),  
+    Column("age", String),
     Column("number", String),
     Column("position", String),
     Column("photo", String),
 )
-
 
 
 fixture_details_table = Table(
@@ -52,6 +50,7 @@ fixture_details_table = Table(
     Column("date", DateTime),
 )
 
+
 events_table = Table(
     "events",
     metadata,
@@ -59,10 +58,45 @@ events_table = Table(
     Column("match_id", Integer),
     Column("elapsed", Integer),
     Column("team_id", Integer),
-    Column("player_id", Integer),
+
+    Column("player_id", String),
     Column("player_name", String),
-    Column("assist_id", Integer),
+
+    Column("assist_id", String),
     Column("assist_name", String),
+
     Column("type", String),
     Column("detail", String),
 )
+
+
+
+team_stats_table = Table(
+    "team_stats",
+    metadata,
+    Column("team_id", Integer, primary_key=True),
+    Column("season", Integer, primary_key=True),
+    Column("total_matches", Integer),
+    Column("wins", Integer),
+    Column("draws", Integer),
+    Column("losses", Integer),
+    Column("goals_for", Integer),
+    Column("goals_against", Integer),
+    Column("goal_diff", Integer),
+    Column("win_rate", Float),
+    Column("recent5_win_rate", Float),
+    Column("recent5_goal_diff", Float),
+    Column("updated_at", DateTime),
+)
+
+team_performance_table = Table(
+    "team_performance",
+    metadata,
+    Column("team_id", Integer, primary_key=True),
+    Column("season", Integer, primary_key=True),
+    Column("goals_per_match", Float),
+    Column("goals_conceded_per_match", Float),
+    Column("goal_diff_per_match", Float),
+    Column("updated_at", DateTime),
+)
+

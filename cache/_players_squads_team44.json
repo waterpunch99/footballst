@@ -174,7 +174,7 @@
           "name": "Z. Flemming",
           "age": 27,
           "number": 19,
-          "position": "Attacker",
+          "position": "Midfielder",
           "photo": "https://media.api-sports.io/football/players/36927.png"
         },
         {
@@ -238,7 +238,7 @@
           "name": "J. Anthony",
           "age": 26,
           "number": 11,
-          "position": "Midfielder",
+          "position": "Attacker",
           "photo": "https://media.api-sports.io/football/players/196855.png"
         },
         {
@@ -294,7 +294,7 @@
           "name": "L. Tchaouna",
           "age": 22,
           "number": 17,
-          "position": "Midfielder",
+          "position": "Attacker",
           "photo": "https://media.api-sports.io/football/players/161621.png"
         },
         {
