@@ -5,13 +5,13 @@ from app.db.schema import team_stats_table, team_performance_table
 from app.etl.load.postgres_loader import upsert_dataframe
 
 def run_team_performance(season=2023):
-    print("[GOLD] team_performance 계산 시작")
+    print("gold team_performance 시작")
 
     stats = pd.read_sql("SELECT * FROM team_stats", engine)
     stats = stats[stats["season"] == season]
 
     if stats.empty:
-        print("[GOLD] team_stats 비어 있음 → 먼저 stats 실행 필요")
+        print("gold team_stats 비어 있음 먼저 stats 실행 필요")
         return
 
     rows = []
@@ -32,4 +32,4 @@ def run_team_performance(season=2023):
     df_perf = pd.DataFrame(rows)
     upsert_dataframe(df_perf, team_performance_table, engine, ["team_id", "season"])
 
-    print("[GOLD] team_performance 완료")
+    print("gold team_performance 완료")

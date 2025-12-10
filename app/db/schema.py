@@ -3,6 +3,11 @@ from sqlalchemy import (
     DateTime, MetaData,Float
 )
 
+from sqlalchemy.dialects.postgresql import JSONB
+import datetime as dt
+
+
+
 metadata = MetaData()
 
 
@@ -100,3 +105,15 @@ team_performance_table = Table(
     Column("updated_at", DateTime),
 )
 
+
+raw_files_table = Table(
+    "raw_files",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("s3_key", String, nullable=False),
+    Column("category", String, nullable=False),
+    Column("params", JSONB),
+    Column("file_size", Integer),
+    Column("status", String, default="success"),
+    Column("created_at", DateTime, default=dt.datetime.utcnow)
+)

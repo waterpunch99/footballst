@@ -6,20 +6,20 @@ from app.etl.load.postgres_loader import upsert_dataframe
 
 
 def run_team_stats(season=2023):
-    print("[GOLD] team_stats 계산 시작")
+    print("gold team_stats 계산 시작")
 
-    # Silver 레이어 수집
+    
     matches = pd.read_sql(f"SELECT * FROM matches", engine)
     details = pd.read_sql(f"SELECT * FROM fixture_details", engine)
 
     if matches.empty or details.empty:
-        print("[GOLD] Silver 레이어 데이터 부족")
+        print("gold 데이터 부족")
         return
 
-    # 날짜 붙이기
+    
     df = matches.merge(details[["match_id", "date"]], on="match_id", how="left")
 
-    # home/away 각각을 "팀 관점"으로 변환
+    
     home_df = df.rename(columns={
         "home_team_id": "team_id",
         "home_goals": "goals_for",
@@ -35,7 +35,7 @@ def run_team_stats(season=2023):
     combined = pd.concat([home_df, away_df], ignore_index=True)
     combined["goal_diff"] = combined["goals_for"] - combined["goals_against"]
 
-    # 결과(win/draw/loss)
+    
     combined["result"] = combined.apply(
         lambda x: "win" if x.goals_for > x.goals_against
         else ("loss" if x.goals_for < x.goals_against else "draw"),
@@ -44,7 +44,7 @@ def run_team_stats(season=2023):
 
     result_map = {"win": 1, "draw": 0, "loss": 0}
 
-    # 시즌 단위 그룹핑
+    
     groups = combined.groupby("team_id")
 
     rows = []
@@ -58,7 +58,7 @@ def run_team_stats(season=2023):
         goals_for = g["goals_for"].sum()
         goals_against = g["goals_against"].sum()
 
-        # 최근 5경기
+        
         recent5 = g_sorted.tail(5)
         recent5_win_rate = (recent5["result"] == "win").mean()
         recent5_goal_diff = recent5["goal_diff"].mean()
@@ -82,4 +82,4 @@ def run_team_stats(season=2023):
     df_stats = pd.DataFrame(rows)
     upsert_dataframe(df_stats, team_stats_table, engine, ["team_id", "season"])
 
-    print("[GOLD] team_stats 완료")
+    print("gold team_stats 완료")

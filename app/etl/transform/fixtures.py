@@ -1,10 +1,8 @@
 import pandas as pd
-
+from app.etl.transform.validators.dataframe_validator import validate_dataframe
 
 def transform_fixtures(raw: dict) -> pd.DataFrame:
-    """
-    raw json → matches DataFrame
-    """
+    
     resp = raw.get("response", [])
     rows = []
 
@@ -26,8 +24,20 @@ def transform_fixtures(raw: dict) -> pd.DataFrame:
         })
 
     df = pd.DataFrame(rows)
+
     if df.empty:
         return df
 
     df["match_date"] = pd.to_datetime(df["match_date"], errors="coerce")
-    return df
+
+  
+    REQUIRED = ["match_id", "match_date", "home_team_id", "away_team_id"]
+    TYPES = {
+        "match_id": "Int64",
+        "home_team_id": "Int64",
+        "away_team_id": "Int64",
+        "home_goals": "Int64",
+        "away_goals": "Int64",
+    }
+
+    return validate_dataframe(df, REQUIRED, TYPES, "matches")

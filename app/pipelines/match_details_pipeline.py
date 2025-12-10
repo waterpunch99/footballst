@@ -1,5 +1,3 @@
-# app/pipelines/match_details_pipeline.py
-
 import pandas as pd
 
 from app.etl.extract.extractor import extract_match_detail
@@ -10,11 +8,11 @@ from app.db.schema import fixture_details_table, events_table
 
 
 def run_match_details_pipeline(engine, sleep_sec=0.5):
-    print("\n[PIPELINE] Match Details 시작")
+    print("\n파이프라인 Match Details 시작")
 
     matches = pd.read_sql("SELECT match_id FROM matches", engine)
     if matches.empty:
-        print("[PIPELINE] match 데이터 없음 → 스킵")
+        print("파이프라인 match 데이터 없음 스킵")
         return
 
     detail_list = []
@@ -34,7 +32,7 @@ def run_match_details_pipeline(engine, sleep_sec=0.5):
         if not df_events.empty:
             event_list.append(df_events)
 
-        # 부하 방지
+        
         if i % 3 == 0:
             import time
             time.sleep(sleep_sec)
@@ -52,7 +50,7 @@ def run_match_details_pipeline(engine, sleep_sec=0.5):
             pd.concat(event_list, ignore_index=True),
             events_table,
             engine,
-            ["id"]   # events_table PK는 id(auto inc)라서 match_id로 묶지 않음
+            ["id"]   
         )
 
-    print("[PIPELINE] Match Details 완료")
+    print("파이프라인 Match Details 완료")

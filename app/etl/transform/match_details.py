@@ -1,9 +1,8 @@
 import pandas as pd
-
+from app.etl.transform.validators.dataframe_validator import validate_dataframe
 
 def transform_match_detail(raw: dict) -> pd.DataFrame:
     resp = raw.get("response", [])
-
     if not resp:
         return pd.DataFrame([])
 
@@ -18,4 +17,10 @@ def transform_match_detail(raw: dict) -> pd.DataFrame:
     }])
 
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
-    return df
+
+    REQUIRED = ["match_id", "date"]
+    TYPES = {
+        "match_id": "Int64",
+    }
+
+    return validate_dataframe(df, REQUIRED, TYPES, "fixture_details")

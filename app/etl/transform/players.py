@@ -1,5 +1,5 @@
 import pandas as pd
-
+from app.etl.transform.validators.dataframe_validator import validate_dataframe
 
 def transform_players(raw: dict) -> pd.DataFrame:
     resp = raw.get("response", [])
@@ -27,6 +27,16 @@ def transform_players(raw: dict) -> pd.DataFrame:
     if df.empty:
         return df
 
+    
     df["player_id"] = df["player_id"].astype(str)
     df["team_id"] = df["team_id"].astype("Int64")
-    return df
+
+    REQUIRED = ["player_id", "team_id", "name"]
+    TYPES = {
+        "player_id": str,
+        "team_id": "Int64",
+        "age": "Int64",
+        "number": "Int64",
+    }
+
+    return validate_dataframe(df, REQUIRED, TYPES, "players")
