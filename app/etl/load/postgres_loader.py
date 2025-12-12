@@ -41,10 +41,10 @@ def upsert_dataframe(df: pd.DataFrame, table, engine, key_cols: list[str]):
                 fail += 1
                 logger.error(f"load 실패: {e}")
 
-                # Dead-letter 저장
+                
                 save_dead_letter(table.name, r, str(e))
 
-                # Error log 기록
+                
                 log_load_error(table.name, e, r)
 
     logger.info(f"load {table.name} 성공 {success}건, 실패 {fail}건")

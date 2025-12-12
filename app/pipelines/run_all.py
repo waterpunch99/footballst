@@ -5,6 +5,10 @@ from app.pipelines.teams_pipeline import run_teams_pipeline
 from app.pipelines.fixtures_pipeline import run_fixtures_pipeline
 from app.pipelines.players_pipeline import run_players_pipeline
 from app.pipelines.match_details_pipeline import run_match_details_pipeline
+from app.pipelines.async_match_details_pipeline import (
+    run_match_details_pipeline_async,
+)
+
 
 
 def init_db():
@@ -12,12 +16,13 @@ def init_db():
     print("db 테이블 생성")
 
 
-def run_all(league=39, season=2023):
+def run_all(league=39, season=2023, concurrency: int = 3):
     logger.info("etl 시작")
     init_db()
 
     run_teams_pipeline(engine, league, season)
     run_fixtures_pipeline(engine, league, season)
     run_players_pipeline(engine)
-    run_match_details_pipeline(engine)
+    run_match_details_pipeline_async(engine, concurrency=concurrency)
+
     logger.info("etl 완료")

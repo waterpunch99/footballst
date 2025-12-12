@@ -4,7 +4,7 @@ from app.pipelines.gold.run_gold_pipeline import run_gold_pipelines
 
 def main(league=39, season=2023):
     
-    run_all(league=league, season=season)
+    run_all(league=league, season=season, concurrency=3)
 
    
     run_gold_pipelines(season=season)
