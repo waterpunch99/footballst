@@ -17,3 +17,6 @@ build/
 
 
 *.log
+
+# docker volumes
+pgdata/

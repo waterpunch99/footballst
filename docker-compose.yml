@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: football_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: footballst
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  etl:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: football_etl
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: footballst
+
+      API_KEY: ${API_KEY}
+
+      AWS_REGION: ap-northeast-2
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_RAW_BUCKET: ${S3_RAW_BUCKET}
+
+    command: ["python", "-m", "app.main"]
+
+  api:
+    build:
+      context: ./api/footballst
+      dockerfile: Dockerfile
+    container_name: football_api
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: footballst
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
